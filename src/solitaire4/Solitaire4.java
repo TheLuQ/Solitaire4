@@ -40,8 +40,6 @@ public class Solitaire4 extends Application {
         root.add(dropPoo, 1, 0);
         root.getChildren().add(joker);
         root.getChildren().add(king);
-        mainPoo.addCards(Arrays.asList(joker,king));
-        dropPoo.addCards(Arrays.asList(joker,king));
         //      
         
         primaryStage.setTitle("Hello World!");
@@ -49,6 +47,8 @@ public class Solitaire4 extends Application {
         primaryStage.show();    
         
         gameLoop.start();
+        mainPoo.addCards(Arrays.asList(joker,king));
+        dropPoo.addCards(Arrays.asList(joker,king));
     }
     
     private GridPane initGrid()

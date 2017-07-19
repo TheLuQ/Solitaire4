@@ -13,9 +13,36 @@ import javafx.scene.image.Image;
  */
 public class Card extends Base{
     private Poo cardPoo;
+    private double xOff, yOff;
+    private static Card dropCard = null;
+    private static double prevPosX, prevPosY;
     
     public Card(Image img) {
         super(img);
+        setManaged(false);
+        setOnMousePressed(ev -> {
+            xOff = ev.getX();
+            yOff = ev.getY();
+            prevPosX = getLayoutX();
+            prevPosY = getLayoutY();
+        });
+        
+        setOnDragDetected(ev -> {
+            startFullDrag();     
+            dropCard = this;
+        });
+        
+        setOnMouseDragged (ev -> {
+                layoutXProperty().set(ev.getSceneX() - xOff);
+                layoutYProperty().set(ev.getSceneY() - yOff);            
+        });       
+        
+        setOnMouseDragExited(ev -> {
+            dropCard.relocate(prevPosX, prevPosY);
+            if (boundsInParentProperty().get().intersects(dropCard.boundsInParentProperty().get()))
+                if (dropCard != this)
+                    ;
+        });
     }
 
     /**

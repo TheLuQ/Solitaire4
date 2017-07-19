@@ -5,10 +5,12 @@
  */
 package solitaire4;
 
+import java.util.Arrays;
 import javafx.application.Application;
 import javafx.geometry.HPos;
 import javafx.geometry.VPos;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
@@ -29,8 +31,19 @@ public class Solitaire4 extends Application {
         root = initGrid();        
         Scene scene = new Scene(root, PREF_WIDTH, PREF_HEIGHT);
         //TEST
-
+        Poo mainPoo = new Poo();
+        Poo dropPoo = new Poo();
+        Card joker = new Card(new Image("file:C:\\Users\\lkettlex\\Pictures\\PNG-cards-1.3\\red_joker.png"));
+        Card king = new Card(new Image("file:C:\\Users\\lkettlex\\Pictures\\PNG-cards-1.3\\king_of_clubs2.png"));
+        
+        root.add(mainPoo,0,0);
+        root.add(dropPoo, 1, 0);
+        root.getChildren().add(joker);
+        root.getChildren().add(king);
+        mainPoo.addCards(Arrays.asList(joker,king));
+        dropPoo.addCards(Arrays.asList(joker,king));
         //      
+        
         primaryStage.setTitle("Hello World!");
         primaryStage.setScene(scene);
         primaryStage.show();    

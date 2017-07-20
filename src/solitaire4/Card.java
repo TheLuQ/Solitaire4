@@ -5,6 +5,8 @@
  */
 package solitaire4;
 
+import java.util.List;
+import javafx.scene.Node;
 import javafx.scene.image.Image;
 
 /**
@@ -38,10 +40,18 @@ public class Card extends Base{
         });       
         
         setOnMouseDragExited(ev -> {
-            dropCard.relocate(prevPosX, prevPosY);
-            if (boundsInParentProperty().get().intersects(dropCard.boundsInParentProperty().get()))
-                if (dropCard != this)
-                    ;
+            Base collisionBase;
+            List<Node> tempList= getParent()
+                    .getChildrenUnmodifiable()
+                    .filtered(node -> node instanceof Base 
+                            && node.getBoundsInParent().intersects(dropCard.getBoundsInParent())
+                            && node != this);
+            
+            if (!tempList.isEmpty()){
+                collisionBase = (Base)tempList.get(0);
+                if (collisionBase.test(dropCard.getCards()))
+                    collisionBase.addCards(dropCard.getCards());
+            }
         });
     }
 
@@ -59,4 +69,17 @@ public class Card extends Base{
         this.cardPoo = cardPoo;
     }
     
+    @Override
+    public void addCards(List<Card> cards){
+        cardPoo.addCards(cards);
+    }
+    
+    @Override
+    public boolean test(List<Card> t) {
+        return !t.isEmpty();
+    }
+    
+    private List<Card> getCards(){
+        return cardPoo.getCards(this);
+    }
 }

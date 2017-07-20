@@ -5,6 +5,8 @@
  */
 package solitaire4;
 
+import java.util.List;
+import java.util.function.Predicate;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
@@ -12,7 +14,7 @@ import javafx.scene.image.ImageView;
  *
  * @author lkettlex
  */
-public class Base extends ImageView {
+abstract class Base extends ImageView implements Predicate<List<Card>>{
     private final double CARD_WIDTH = 117;
     private final double CARD_HEIGHT = 169;
     
@@ -21,4 +23,6 @@ public class Base extends ImageView {
         setFitWidth(CARD_WIDTH);
         setFitHeight(CARD_HEIGHT);   
     }
+    
+    abstract void addCards(List<Card> tempCards);
 }

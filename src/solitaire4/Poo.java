@@ -28,8 +28,6 @@ public class Poo extends Base implements Predicate<List<Card>>{
     public void addCards(List<Card> tempCards){
         posY = pooCards.isEmpty() ? getLayoutY() : pooCards.get(pooCards.size()).getLayoutY() + SHIFT;
         Poo oldPoo = tempCards.get(0).getCardPoo();
-        if (oldPoo != null)
-            oldPoo.removeCards(tempCards);
         pooCards.addAll(tempCards);
         tempCards.forEach(card -> card.setCardPoo(this));
         tempCards.forEach(card -> {            

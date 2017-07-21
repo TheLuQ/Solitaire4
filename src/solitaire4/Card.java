@@ -5,6 +5,8 @@
  */
 package solitaire4;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import javafx.scene.Node;
 import javafx.scene.image.Image;
@@ -17,6 +19,8 @@ public class Card extends Base{
     private Poo cardPoo;
     private double xOff, yOff;
     private static Card dropCard = null;
+    private static List<Card> dropCards = null;
+    private static Poo oldPoo = null;
     private static double prevPosX, prevPosY;
     
     public Card(Image img) {
@@ -32,6 +36,11 @@ public class Card extends Base{
         setOnDragDetected(ev -> {
             startFullDrag();     
             dropCard = this;
+            dropCard.getCards().forEach(card -> card.toFront());
+            dropCards = new ArrayList<>(dropCard.getCards());
+            oldPoo = dropCard.getCardPoo();
+            dropCard.getCardPoo().removeCards(dropCard.getCards());
+            dropCard.setCardPoo(null);
         });
         
         setOnMouseDragged (ev -> {
@@ -49,9 +58,11 @@ public class Card extends Base{
             
             if (!tempList.isEmpty()){
                 collisionBase = (Base)tempList.get(0);
-                if (collisionBase.test(dropCard.getCards()))
-                    collisionBase.addCards(dropCard.getCards());
+                if (collisionBase.test(dropCards))
+                    collisionBase.addCards(dropCards); 
             }
+            else
+                oldPoo.addCards(dropCards);
         });
     }
 

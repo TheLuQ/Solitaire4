@@ -8,6 +8,7 @@ package solitaire4;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.Node;
 import javafx.scene.image.Image;
 
@@ -16,53 +17,65 @@ import javafx.scene.image.Image;
  * @author lkettlex
  */
 public class Card extends Base{
-    private Poo cardPoo;
+    private SimpleObjectProperty<Poo> cardPoo = new SimpleObjectProperty<>();
     private double xOff, yOff;
-    private static Card dropCard = null;
+    private double shift;
     private static List<Card> dropCards = null;
     private static Poo oldPoo = null;
-    private static double prevPosX, prevPosY;
     
     public Card(Image img) {
         super(img);
         setManaged(false);
+        shift = 0;
+        
+        cardPoo.addListener((val, oldVal, newVal) -> {
+            if (oldVal != null ){
+                oldVal.removeCards(Arrays.asList(this));
+            }
+        });
+        
         setOnMousePressed(ev -> {
             xOff = ev.getX();
             yOff = ev.getY();
-            prevPosX = getLayoutX();
-            prevPosY = getLayoutY();
         });
         
         setOnDragDetected(ev -> {
-            startFullDrag();     
-            dropCard = this;
-            dropCard.getCards().forEach(card -> card.toFront());
-            dropCards = new ArrayList<>(dropCard.getCards());
-            oldPoo = dropCard.getCardPoo();
-            dropCard.getCardPoo().removeCards(dropCard.getCards());
-            dropCard.setCardPoo(null);
+            startFullDrag();
         });
         
         setOnMouseDragged (ev -> {
-                layoutXProperty().set(ev.getSceneX() - xOff);
-                layoutYProperty().set(ev.getSceneY() - yOff);            
-        });       
-        
+            if (dropCards == null){
+                dropCards = new ArrayList<>(this.getCards());
+                oldPoo = dropCards.get(0).getCardPoo();
+                dropCards.forEach(card -> {
+                    card.setCardPoo(null);
+                    card.toFront();
+                });
+            }
+
+            dropCards.forEach(card -> {                
+                card.relocate(ev.getSceneX() - xOff, ev.getSceneY() - yOff + dropCards.indexOf(card)*shift);
+            });
+        });
+
         setOnMouseDragExited(ev -> {
-            Base collisionBase;
-            List<Node> tempList= getParent()
+            Base collisionBase = (Base) getParent()
                     .getChildrenUnmodifiable()
                     .filtered(node -> node instanceof Base 
-                            && node.getBoundsInParent().intersects(dropCard.getBoundsInParent())
-                            && node != this);
-            
-            if (!tempList.isEmpty()){
-                collisionBase = (Base)tempList.get(0);
-                if (collisionBase.test(dropCards))
+                            && node.getBoundsInParent().intersects(dropCards.get(0).getBoundsInParent())
+                            && !dropCards.contains(node))
+                    .stream()
+                    .findFirst().orElse(null);
+
+            if (collisionBase != null && (collisionBase.test(dropCards))){
                     collisionBase.addCards(dropCards); 
             }
-            else
+            else{
                 oldPoo.addCards(dropCards);
+            }
+
+            dropCards = null;
+            oldPoo = null;
         });
     }
 
@@ -70,19 +83,19 @@ public class Card extends Base{
      * @return the cardPoo
      */
     public Poo getCardPoo() {
-        return cardPoo;
+        return cardPoo.get();
     }
 
     /**
      * @param cardPoo the cardPoo to set
      */
     public void setCardPoo(Poo cardPoo) {
-        this.cardPoo = cardPoo;
+        this.cardPoo.set(cardPoo);
     }
     
     @Override
     public void addCards(List<Card> cards){
-        cardPoo.addCards(cards);
+        cardPoo.get().addCards(cards);
     }
     
     @Override
@@ -91,6 +104,13 @@ public class Card extends Base{
     }
     
     private List<Card> getCards(){
-        return cardPoo.getCards(this);
+        return cardPoo.get().getCards(this);
+    }
+
+    /**
+     * @param shift the shift to set
+     */
+    public void setShift(double shift) {
+        this.shift = shift;
     }
 }

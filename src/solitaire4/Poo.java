@@ -26,10 +26,12 @@ public class Poo extends Base implements Predicate<List<Card>>{
         
     @Override
     public void addCards(List<Card> tempCards){
-        posY = pooCards.isEmpty() ? getLayoutY() : pooCards.get(pooCards.size()).getLayoutY() + SHIFT;
-        Poo oldPoo = tempCards.get(0).getCardPoo();
+        posY = pooCards.isEmpty() ? getLayoutY() : pooCards.get(pooCards.size()-1).getLayoutY() + SHIFT;
         pooCards.addAll(tempCards);
-        tempCards.forEach(card -> card.setCardPoo(this));
+        tempCards.forEach(card -> {
+            card.setCardPoo(this);
+            card.setShift(SHIFT);
+        });
         tempCards.forEach(card -> {            
             card.relocate(getLayoutX(),posY); // 1. nie wiem czy tutaj, 2. nie wiem czy nie przeniesc do klas potomnych
             posY += SHIFT;

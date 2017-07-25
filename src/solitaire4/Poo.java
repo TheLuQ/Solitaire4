@@ -8,6 +8,7 @@ package solitaire4;
 import java.util.List;
 import java.util.function.Predicate;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.scene.image.Image;
 
@@ -22,10 +23,23 @@ public class Poo extends Base implements Predicate<List<Card>>{
     
     public Poo() {
         super(new Image("file:C:\\Users\\lkettlex\\Pictures\\drop.png"));
+        
+        pooCards.addListener((ListChangeListener) change -> {
+            while (change.next()){
+                if (change.wasAdded() || change.wasRemoved())
+                    pooCards.forEach(card -> {
+                        if (pooCards.indexOf(card) < (pooCards.size()-1))
+                            card.setCanAccDrop(false);
+                        else
+                            card.setCanAccDrop(true);
+                    });
+            }
+        });
     }
         
     @Override
     public void addCards(List<Card> tempCards){
+        setCanAccDrop(false);
         posY = pooCards.isEmpty() ? getLayoutY() : pooCards.get(pooCards.size()-1).getLayoutY() + SHIFT;
         pooCards.addAll(tempCards);
         tempCards.forEach(card -> {
@@ -33,13 +47,15 @@ public class Poo extends Base implements Predicate<List<Card>>{
             card.setShift(SHIFT);
         });
         tempCards.forEach(card -> {            
-            card.relocate(getLayoutX(),posY); // 1. nie wiem czy tutaj, 2. nie wiem czy nie przeniesc do klas potomnych
+            card.relocate(getLayoutX(),posY);
             posY += SHIFT;
         });
     }
     
     public void removeCards(List<Card> tempCards){
         pooCards.removeAll(tempCards);
+        if (pooCards.isEmpty())
+            setCanAccDrop(true);
     }
     
     public List<Card> getCards(Card card){

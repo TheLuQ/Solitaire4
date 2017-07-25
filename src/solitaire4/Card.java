@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.scene.Node;
 import javafx.scene.image.Image;
 
 /**
@@ -17,7 +16,7 @@ import javafx.scene.image.Image;
  * @author lkettlex
  */
 public class Card extends Base{
-    private SimpleObjectProperty<Poo> cardPoo = new SimpleObjectProperty<>();
+    private final SimpleObjectProperty<Poo> cardPoo = new SimpleObjectProperty<>();
     private double xOff, yOff;
     private double shift;
     private static List<Card> dropCards = null;
@@ -27,7 +26,7 @@ public class Card extends Base{
         super(img);
         setManaged(false);
         shift = 0;
-        
+
         cardPoo.addListener((val, oldVal, newVal) -> {
             if (oldVal != null ){
                 oldVal.removeCards(Arrays.asList(this));
@@ -63,10 +62,11 @@ public class Card extends Base{
                     .getChildrenUnmodifiable()
                     .filtered(node -> node instanceof Base 
                             && node.getBoundsInParent().intersects(dropCards.get(0).getBoundsInParent())
-                            && !dropCards.contains(node))
+                            && !dropCards.contains(node)
+                            && ((Base)node).getCanAccDrop())
                     .stream()
                     .findFirst().orElse(null);
-
+            
             if (collisionBase != null && (collisionBase.test(dropCards))){
                     collisionBase.addCards(dropCards); 
             }

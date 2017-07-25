@@ -17,6 +17,7 @@ import javafx.scene.image.ImageView;
 abstract class Base extends ImageView implements Predicate<List<Card>>{
     private final double CARD_WIDTH = 117;
     private final double CARD_HEIGHT = 169;
+    private boolean canAccDrop = true;
     
     public Base(Image img){
         super(img);
@@ -25,4 +26,12 @@ abstract class Base extends ImageView implements Predicate<List<Card>>{
     }
     
     abstract void addCards(List<Card> tempCards);
+    
+    protected boolean getCanAccDrop(){
+        return canAccDrop;
+    }
+    
+    protected void setCanAccDrop(boolean canAccDrop){
+        this.canAccDrop = canAccDrop;
+    }
 }
